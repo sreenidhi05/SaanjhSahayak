@@ -1,0 +1,53 @@
+.container {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.field-container {
+  margin-bottom: 20px;
+}
+
+.field-title {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.field-row {
+  display: flex;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.field-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  color: black;
+  font-weight: 400;
+  background-color: skyblue;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.field-value {
+  flex: 1;
+  padding-left: 1rem;
+  background-color: green;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.field-input {
+  width: 100%;
+  background-color: green;
+}

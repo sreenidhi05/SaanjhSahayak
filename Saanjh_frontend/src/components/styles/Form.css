@@ -1,0 +1,37 @@
+/* src/styles/Form.css */
+
+.form-container {
+  max-width: 600px; /* Increase the width of the form container */
+  width: 100%; /* Ensure it doesn't exceed the parent container */
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1; /* Ensure it is above the blur overlay */
+  text-align: center; /* Center the content */
+}
+
+.container {
+  z-index: 1;
+}
+
+.upload-report {
+  margin-bottom: 20px;
+}
+
+.editable-form {
+  margin-top: 20px;
+}
+
+/* Style for button */
+button {
+  background-color: #007bff; /* Blue color */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
