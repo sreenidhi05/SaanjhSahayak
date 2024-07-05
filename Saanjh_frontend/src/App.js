@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {useNavigate } from 'react-router-dom';
 import Navbar from "./components/Navbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -9,37 +10,54 @@ import Register from './components/pages/Register';
 import AboutUs from './components/pages/AboutUs';
 import Form from './components/pages/Form';
 import ChatBot from './components/ChatBot';
-
+import Uploaded from './components/Uploaded';
 
 const App = () => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [results, setResults] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const [uploadedFile, setUploadedFile] = React.useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const handleFileUploaded = (filePath) => {
     setUploadedFile(filePath);
+  };
 
+  useEffect(() => {
+    const loginState = sessionStorage.getItem('isLoggedIn');
+    if (loginState) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+    // assuming you have a `navigate` function imported from `react-router-dom`
+    navigate('/login');
   };
 
   return (
-    <Router>
-      <Navbar />
+    <div>
+      
+      <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<Home/>}/>
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home isAuthenticated={isAuthenticated} />} />
         <Route path="/form" element={<Form />} />
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/signin" element={<SignIn setAuth={setIsAuthenticated} />} />
+        <Route path="/login" element={<SignIn setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/uploaded" element={<Uploaded />} />
       </Routes>
-    </Router>
+    </div>
   );
 }
 
 export default App;
+
 
 
 // import React, {useState} from 'react'

@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Navbar() {
+function Navbar({isLoggedIn, handleLogout}) {
     return (
       // <nav className="navbar navbar-expand-lg navbar-light fixed-top" style={{backgroundColor: '#42a5f5'}}>
       <nav className="navbar navbar-expand-lg navbar-light fixed-top">
@@ -19,24 +19,36 @@ function Navbar() {
               </li>
 
               <li className="nav-item">
-                <a className="nav-link" href="/signin" style={{ fontSize: '18px', fontWeight: 'bold' }}>Sign In</a>
+                <a className="nav-link" href="/login" style={{ fontSize: '18px', fontWeight: 'bold' }}>Sign In</a>
               </li>
 
+              {isLoggedIn && (
               <li className="nav-item">
                 <a className="nav-link" href="/chatbot" style={{ fontSize: '18px', fontWeight: 'bold' }}>Chat Bot</a>
               </li>
+              )}
 
+              {isLoggedIn && (
               <li className="nav-item">
                 <a className="nav-link" href="/form" style={{ fontSize: '18px', fontWeight: 'bold' }}>Form</a>
               </li>
+              )}
 
+             {isLoggedIn && (
               <li className="nav-item">
                 <a className="nav-link" href="/profile" style={{ fontSize: '18px', fontWeight: 'bold' }}>Profile</a>
               </li>
+             )}
 
               <li className="nav-item">
                 <a className="nav-link" href="/aboutus" style={{ fontSize: '18px', fontWeight: 'bold' }}>About Us</a>
               </li>
+
+              {isLoggedIn && (
+                <li className="nav-item">
+                  <button onClick={handleLogout} className="text-white text-lg mb-2 md:mb-0 md:mr-2">Logout</button>
+                </li>
+              )}
 
               {/* <li className="nav-item">
                 <a className="nav-link disabled" aria-disabled="true" style={{ fontSize: '18px', fontWeight: 'bold' }}>Disabled</a>
