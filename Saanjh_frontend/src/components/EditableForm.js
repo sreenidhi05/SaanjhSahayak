@@ -1,33 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import Modal from 'react-modal';
 import axios from 'axios';
 
-const makeRequestAPI = async (prompt) => {
-  try {
-    const response = await axios.post('http://localhost:8080/diagnose', { prompt });
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error in makeRequestAPI: ${error.message}`);
-  }
-};
+
+// const makeRequestAPI = async (prompt) => {
+//   try {
+//     const response = await axios.post('http://localhost:8080/diagnose', { prompt });
+//     return response.data;
+//   } catch (error) {
+//     throw new Error(`Error in makeRequestAPI: ${error.message}`);
+//   }
+// };
 
 const getWeekNumber = () => {
   const currentDate = new Date();
-  const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
-  const pastDaysOfYear = (currentDate - startOfYear) / 86400000 + 1;
-  return Math.ceil(pastDaysOfYear / 7);
+  return currentDate;
 };
 
 const EditableForm = ({ selectedPatientId, initialData }) => {
   console.log('EditableForm selectedPatientId:', selectedPatientId);
   const [formData, setFormData] = useState(initialData || {});
-  const [originalData, setOriginalData] = useState(initialData || {});
   const [isEditing, setIsEditing] = useState(false);
   const [diagnosisReport, setDiagnosisReport] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false); // State for save success message
-  const [isDataSaved, setIsDataSaved] = useState(false); // State to track if data is already saved
+
   const reportRef = useRef(null);
 
   useEffect(() => {
@@ -52,8 +46,6 @@ const EditableForm = ({ selectedPatientId, initialData }) => {
     nested[path[path.length - 1]] = value;
 
     setFormData(updatedFormData);
-
-    console.log('Updated form data:', updatedFormData);
   };
 
   const renderFields = (data, path = []) => {
@@ -91,57 +83,19 @@ const EditableForm = ({ selectedPatientId, initialData }) => {
     });
   };
 
-  const mutation = useMutation({
-    mutationFn: makeRequestAPI,
-    mutationKey: ['gemini-ai-request'],
-    onSuccess: (data) => {
-      setDiagnosisReport(
-        data.replace(/\*+/g, '').split('\n').map((line, index) => <p key={index}>{line}</p>)
-      );
-      setShowModal(true);
-    },
-  });
 
-  const handleSubmit = async () => {
+  const handleSave = async () => {
     try {
-      if (!isDataSaved) { // Check if data is not already saved
-        const weekNumber = getWeekNumber();
-        const dataToSave = { ...formData, userId: selectedPatientId, week: weekNumber };
-        const response = await axios.post('http://localhost:8080/save', dataToSave);
-        console.log('Save response:', response.data);
-        
-        // Show success message
-        setSaveSuccess(true);
-        setIsDataSaved(true); // Mark data as saved
-        
-        // Reset success message after 3 seconds
-        setTimeout(() => {
-          setSaveSuccess(false);
-        }, 3000);
-      } else {
-        console.log('Data already saved.');
-      }
+      const weekNumber = getWeekNumber();
+      const dataToSave = { ...formData, userId: selectedPatientId, date: weekNumber };
+      const response = await axios.post('http://localhost:8080/api/save', dataToSave);
+      console.log('Save response:', response.data);
+      setIsEditing(false);
     } catch (error) {
       console.error('Error saving data:', error);
-      // Optionally, show an error message if saving fails
-      alert('Error: Failed to save data.');
     }
   };
 
-  const handleSave = () => {
-    setOriginalData(formData); // Save the current form data as the original data
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setFormData(originalData); // Revert to the original data
-    setIsEditing(false);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setDiagnosisReport(null);
-  };
 
   return (
     <div className='flex flex-col min-h-screen p-6' style={{ maxWidth: '1400px', margin: '0 auto' }}>
@@ -162,18 +116,19 @@ const EditableForm = ({ selectedPatientId, initialData }) => {
             <button
               type="button"
               className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br font-medium rounded-lg text-s px-4 py-2.5 text-center inline-flex items-center"
-              onClick={() => setIsEditing(true)}
+              onClick={() => setIsEditing(!isEditing)}
             >
-              <img src="https://res.cloudinary.com/duwadnxwf/image/upload/v1716276383/icons8-edit-24_fpgba3.png" className="h-5 w-5 pb-1" />
-              Edit
+            {!isEditing && <img src="https://res.cloudinary.com/duwadnxwf/image/upload/v1716276383/icons8-edit-24_fpgba3.png" className="h-6 w-5 pb-1" />}
+            {isEditing ? 'Cancel' : 'Edit'}
             </button>
-            <button
+
+            {/* <button
               type="button"
               className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br font-medium rounded-lg text-s px-4 py-2.5 text-center inline-flex items-center"
-              onClick={handleSubmit}
+              onClick={handleSave}
             >
               Submit
-            </button>
+            </button> */}
           </>
         )}
 
@@ -186,57 +141,25 @@ const EditableForm = ({ selectedPatientId, initialData }) => {
             >
               Save
             </button>
-            <button
+            {/* <button
               type="button"
               className="text-white bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:bg-gradient-to-br font-medium rounded-lg text-s px-4 py-2.5 text-center inline-flex items-center"
               onClick={handleCancel}
             >
               Cancel
-            </button>
+            </button> */}
           </>
         )}
       </div>
 
-      {mutation.isPending && <p className='text-5xl'>Generating your content</p>}
-      {mutation.isError && <p>{mutation.error.message}</p>}
+      {/* {mutation.isPending && <p className='text-5xl'>Generating your content</p>}
+      {mutation.isError && <p>{mutation.error.message}</p>} */}
       
-      {saveSuccess && (
+      {/* {saveSuccess && (
         <p className="text-green-600 mt-2">Data successfully saved in MongoDB!</p>
-      )}
+      )} */}
 
-      <Modal
-        isOpen={showModal}
-        onRequestClose={closeModal}
-        style={{
-          overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1000,
-          },
-          content: {
-            maxWidth: '600px',
-            margin: 'auto',
-            border: '1px solid #ccc',
-            borderRadius: '10px',
-            padding: '20px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            backgroundColor: 'rgba(220, 220, 220, 0.76)',
-            textAlign: 'center',
-          },
-        }}
-      >
-        <h2 className='text-2xl font-bold text-dark-800 mb-2'>Diagnosis Report</h2>
-        {diagnosisReport && (
-          <div className='border border-gray-300 p-4 rounded-md text-dark'>
-            {diagnosisReport}
-          </div>
-        )}
-        <button
-          onClick={closeModal}
-          className='mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg focus:outline-none'
-        >
-          Close
-        </button>
-      </Modal>
+
     </div>
   );
 };

@@ -9,8 +9,11 @@ import SignIn from './components/pages/SignIn';
 import Register from './components/pages/Register';
 import AboutUs from './components/pages/AboutUs';
 import Form from './components/pages/Form';
-import ChatBot from './components/ChatBot';
 import Uploaded from './components/Uploaded';
+import LLMChatBot from './components/LLMChatBot';
+import Admin from './components/Admin';
+import AddCare from './components/AddCare';
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -44,14 +47,16 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home isAuthenticated={isAuthenticated} />} />
-        <Route path="/form" element={<Form />} />
-        <Route path="/chatbot" element={<ChatBot />} />
+        <Route path="/form" element={isLoggedIn && sessionStorage.getItem('userType') === 'Care Taker' ? <Form /> : <Home />} />
+        <Route path="/chatbot" element={isLoggedIn && sessionStorage.getItem('userType') === 'doctor' ? <LLMChatBot /> : <Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<SignIn setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/uploaded" element={<Uploaded />} />
-      </Routes>
+        <Route path='/admin' element={isLoggedIn && sessionStorage.getItem('userType') === 'admin' ? <Admin /> : <Home />} />  
+        <Route path='/addcare' element={isLoggedIn && sessionStorage.getItem('userType') === 'admin' ? <AddCare></AddCare> : <Home />} />   
+        </Routes>
     </div>
   );
 }

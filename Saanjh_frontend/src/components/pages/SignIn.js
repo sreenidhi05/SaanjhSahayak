@@ -77,7 +77,7 @@ const SignIn = ({setIsLoggedIn}) => {
             {errorLoggingIn && <Error />}
             <div className="mb-3">
               <label htmlFor="userId" className="form-label">
-                UserId
+                Username
               </label>
               <input 
               type="text" 
@@ -106,33 +106,9 @@ const SignIn = ({setIsLoggedIn}) => {
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="userType" className="form-label text-dark">
-                User Type
-              </label>
-              <select
-                className="form-control form-control-sm"
-                id="userType"
-                name="userType"
-                value={formObj.userType}
-                onChange={changeHandler}
-              >
-                <option value="">Select User Type</option>
-                <option value="caregiver">Care Taker</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
             <button type="submit" className="btn btn-primary">
               Submit
             </button>
-
-            {formObj.userType === 'caregiver' && (
-              <div className="mt-3 text-center">
-                <span>New user? </span>
-                <Link className='text-primary' to="/register">Register here</Link>
-              </div>
-            )}
 
           </form>
 

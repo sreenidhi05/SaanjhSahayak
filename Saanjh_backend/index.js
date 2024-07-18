@@ -8,8 +8,10 @@ const dotenv = require("dotenv");
 const cohere = require('cohere-ai');  // Ensure you have this import
 dotenv.config();
 cohere.apiKey = process.env.COHERE_API_KEY;
-
 app.use(express.json());
+
+
+const { usersModel, patientIdModel, reportIdsModel, reportDatasModel, careIDsModel, predictionsModel } = require('./models/user'); // Adjust the path as necessary
 
 
 const pdfParse = require('pdf-parse');
@@ -25,47 +27,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-
-
-app.post('/chatbot', async (req, res) => {
-  const { prompt } = req.body;
-  if (!prompt) {
-    return res.status(400).send('Prompt is required');
-  }
-
-  try {
-    let responseText;
-
-    if (prompt.toLowerCase().includes('user data')) {
-      const userId = prompt.match(/\d+/)[0];
-      const userData = await usersModel.findOne({ userId });
-      responseText = `User Data: ${JSON.stringify(userData)}`;
-    } else if (prompt.toLowerCase().includes('patient data')) {
-      const userId = prompt.match(/\d+/)[0];
-      const patientData = await patientIdModel.findOne({ userId });
-      responseText = `Patient Data: ${JSON.stringify(patientData)}`;
-    } else if (prompt.toLowerCase().includes('report data')) {
-      const userId = prompt.match(/\d+/)[0];
-      const reportData = await reportsModel.find({ userId });
-      responseText = `Report Data: ${JSON.stringify(reportData)}`;
-    } else {
-      const cohereResponse = await cohere.generate({
-        model: 'command-xlarge-2023',
-        prompt: prompt,
-        max_tokens: 100,
-      });
-      responseText = cohereResponse.body.generations[0].text;
-    }
-
-    res.send(responseText);
-  } catch (error) {
-    console.error('Error generating response from Cohere:', error);
-    res.status(500).send('Failed to generate response');
-  }
-});
-
-
-
 
 
 
@@ -181,6 +142,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     res.status(500).send('Error processing PDF');
   }
 });
+
+
 app.post("/save", async (req, res) => {
   const { userId, week, ...AllData } = req.body;
   let PD = AllData['Patient Details'];

@@ -7,7 +7,7 @@ function Home()
   let navigate = useNavigate();
   const handleClick = () => {
     // Redirect to the sign-in page when the button is clicked
-    navigate('/signin');
+    navigate('/login');
   };
 
   const backgroundStyle = {
@@ -56,11 +56,12 @@ function Home()
       <div style={contentStyle}>
         <p>Saanjh <br/>Sahayak</p>
       </div>
-      <div style={buttonContainerStyle}>
-        <button className="btn btn-primary" onClick={handleClick}>Continue</button> {/* Apply Bootstrap classes */}
-      </div>
+      {/* <div style={buttonContainerStyle}>
+        <button className="btn btn-primary" onClick={handleClick}>Continue</button> 
+      </div> */}
     </div>
   );
 }
 
 export default Home;
+
