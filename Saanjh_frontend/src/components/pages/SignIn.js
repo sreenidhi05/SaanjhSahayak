@@ -2,6 +2,7 @@ import React ,{useState} from 'react';
 import { Link , useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
+
 const SignIn = ({setIsLoggedIn}) => {
   
   const [formObj, setFormObj] = useState({ userId: "", password: "" });
@@ -18,12 +19,14 @@ const SignIn = ({setIsLoggedIn}) => {
     console.log(formObj);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/users/login', { ...formObj });
+      const response = await axios.post('http://localhost:8080/api/login', { ...formObj });
       console.log(response);
       if (response.data.success) {
         setLoggedIn(true);
         setErrorLoggingIn('');
         sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('userType', response.data.user.userType); // Store userType
+
         setIsLoggedIn(true);
         console.log("Successfully logged in");
         setTimeout(() => {
